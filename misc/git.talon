@@ -24,6 +24,7 @@ git clean everything: "git clean -dfx"
 git commit message <user.text>: "git commit -m '{text}'"
 git commit: "git commit\n"
 git commit amend: "git commit --amend\n"
+git commit amend message <user.text>: "git commit -am '{text}'"
 git commit existing: "git commit -a\n"
 git diff (colour|color) words: "git diff --color-words "
 git diff: "git diff "
@@ -83,6 +84,7 @@ git (switch create | new branch) [<user.text>]:
 git switch orphan: "git switch --orphan "
 git submodule add:  "git submodule add "
 git tag: "git tag "
+git undo last commit: "git reset HEAD~ "
 
 # Convenience
 git edit config: "git config --local -e\n"
