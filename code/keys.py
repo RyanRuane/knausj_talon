@@ -197,8 +197,8 @@ symbol_key_words = {
     "caret": "^",
     "amper": "&",
     "pipe": "|",
-    "dubquote": '"',
-    "double quote": '"',
+    "speechmark": '"',
+    "double quo": '"',
 
     # Currencies
     "dollar": "$",
@@ -230,8 +230,8 @@ simple_keys = [
 ]
 
 alternate_keys = {
-    "delete": "backspace",
-    "forward delete": "delete",
+    "back": "backspace",
+    "dell": "delete",
     #'junk': 'backspace',
     "page up": "pageup",
     "page down": "pagedown",
