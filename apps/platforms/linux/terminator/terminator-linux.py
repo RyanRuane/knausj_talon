@@ -28,7 +28,7 @@ ctx.tags = [
 # --- Implement actions ---
 @ctx.action_class("user")
 class user_actions:
-    # tag: user.splits
+    # user.splits
     def split_window_right(): actions.key("alt-right")
     def split_window_left(): actions.key("alt-left")
     def split_window_down(): actions.key("alt-down")
@@ -41,10 +41,6 @@ class user_actions:
     def split_clear_all(): actions.key("shift-ctrl-g")
     def split_next(): actions.key("shift-ctrl-n")
     def split_last(): actions.key("shift-ctrl-p")
-
-    # user.tabs
-    def tab_jump(number):
-        actions.key(f"alt-{number}")
 
 
 @ctx.action_class("app")
