@@ -42,7 +42,7 @@ go implementation: user.idea("action GotoImplementation")
 go usage: user.idea("action FindUsages")
 go type: user.idea("action GotoTypeDeclaration")
 go test: user.idea("action GotoTest")
-go back: user.idea("action Back")
+# go back: user.idea("action Back")
 go forward: user.idea("action Forward")
 # Search
 find (everywhere | all): user.idea("action SearchEverywhere")
