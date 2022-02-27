@@ -1,40 +1,65 @@
-import re
+from typing import Dict
 
 from talon import Context, Module, actions, settings
 
 mod = Module()
+# rust specific grammar
+mod.list("code_macros", desc="List of macros for active language")
+mod.list("code_trait", desc="List of traits for active language")
+
+
+@mod.capture(rule="{user.code_macros}")
+def code_macros(m) -> str:
+    """Returns a macro name"""
+    return m.code_macros
+
+
+@mod.action_class
+class Actions:
+    def code_operator_structure_dereference():
+        """Inserts a reference operator """
+
+    def code_state_implements():
+        """Inserts implements block, positioning the cursor appropriately"""
+
+    def code_insert_if_let_some():
+        """Inserts if let some block, positioning the cursor appropriately"""
+
+    def code_insert_if_let_error():
+        """Inserts if let error block, positioning the cursor appropriately"""
+
+    def code_insert_trait_annotation(type: str):
+        """Inserts type annotation for implementor of trait"""
+
+    def code_insert_return_trait(type: str):
+        """Inserts a return type for implementor of trait"""
+
+    def code_insert_macro(text: str, selection: str):
+        """Inserts a macro and positions the cursor appropriately"""
+
+    def code_insert_macro_array(text: str, selection: str):
+        """Inserts a macro array and positions the cursor appropriately"""
+
+    def code_insert_macro_block(text: str, selection: str):
+        """Inserts a macro block and positions the cursor appropriately"""
+
+    def code_state_unsafe():
+        """Inserts an unsafe block and positions the cursor appropriately"""
+
+
 ctx = Context()
 ctx.matches = r"""
-tag: user.python
+tag: user.rust
 """
 
-standard_macros = {
-    "panic": "panic!",
-    "format": "format!",
-    "concatenate": "concat!",
-    "print": "print!",
-    "print line": "println!",
-}
 
-logging_macros = {
-    "debug": "debug!",
-    "info": "info!",
-    "warning": "warn!",
-    "error": "error!",
-}
-
-testing_macros = {
-    "assert": "assert!",
-    "assert equal": "assert_eq!",
-    "assert not equal": "assert_ne!",
-
+unsafe_functions = {
+    "catch unwind": "std::panic::catch_unwind",
 }
 
 # tag: functions_gui
 ctx.lists["user.code_functions"] = {
-    **standard_macros,
-    **logging_macros,
-    **testing_macros,
+    **unsafe_functions,
 }
 
 scalar_types = {
@@ -90,13 +115,85 @@ standard_sync_types = {
     "sink sender": "SyncSender",
 }
 
+
+def append_key_value_to_dict(
+    a_dict: Dict[str, str],
+    key_prefix: str,
+    value_prefix: str,
+) -> Dict[str, str]:
+    return {
+        f"{key_prefix}{k}": f"{value_prefix}{v}"
+        for k, v in a_dict.items()
+    }
+
+
+def duplicate_for_all_type_modifies(types: Dict[str, str]) -> Dict[str, str]:
+    return {
+        **types,
+        **append_key_value_to_dict(types, "mutable ", "mut "),
+        **append_key_value_to_dict(types, "mute ", "mut "),
+        **append_key_value_to_dict(types, "borrowed ", "&"),
+        **append_key_value_to_dict(types, "borrowed mutable ", "&mut "),
+        **append_key_value_to_dict(types, "borrowed mute ", "&mut "),
+        **append_key_value_to_dict(types, "mute borrowed ", "&mut "),
+    }
+
+
+all_types = {
+    **duplicate_for_all_type_modifies(scalar_types),
+    **duplicate_for_all_type_modifies(compound_types),
+    **duplicate_for_all_type_modifies(standard_library_types),
+    **duplicate_for_all_type_modifies(standard_sync_types),
+}
+
 # tag: functions
 ctx.lists["user.code_type"] = {
-    **scalar_types,
-    **compound_types,
-    **standard_library_types,
-    **standard_sync_types,
+    **all_types,
 }
+
+# rust specific grammar
+
+standard_macros = {
+    "macro rules": "macro_rules!",
+    "panic": "panic!",
+    "format": "format!",
+    "concatenate": "concat!",
+    "print": "print!",
+    "print line": "println!",
+    "to do": "todo!",
+    "vector": "vec!",
+}
+
+logging_macros = {
+    "debug": "debug!",
+    "info": "info!",
+    "warning": "warn!",
+    "error": "error!",
+}
+
+testing_macros = {
+    "assert": "assert!",
+    "assert equal": "assert_eq!",
+    "assert not equal": "assert_ne!",
+
+}
+
+ctx.lists["user.code_macros"] = {
+    **standard_macros,
+    **logging_macros,
+    **testing_macros,
+}
+
+closure_traits = {
+    "closure": "Fn",
+    "closure once": "FnOnce",
+    "closure mutable": "FnMut",
+}
+
+ctx.lists["user.code_trait"] = {
+    **closure_traits,
+}
+
 
 @ctx.action_class("user")
 class UserActions:
@@ -149,36 +246,36 @@ class UserActions:
         actions.key("left enter")
 
     def code_state_if():
-        actions.insert('if  {\n}\n')
-        actions.key('up:2 left:2')
+        actions.insert('if  {  }')
+        actions.key('end left:5')
 
     def code_state_else_if():
-        actions.insert('else if  {\n}\n')
-        actions.key('up:2 left:2')
+        actions.insert(' else if  {  }')
+        actions.key('end left:5')
 
     def code_state_else():
-        actions.insert('else\n{\n}\n')
-        actions.key('up:2')
+        actions.insert(' else {  }')
+        actions.key('left:2')
 
     def code_state_switch():
-        actions.insert('match  {\n}\n')
-        actions.key('up:2 left:2')
+        actions.insert('match  {  }')
+        actions.key('end left:5')
 
     def code_state_for():
         actions.insert('for  in  {\n}\n')
-        actions.key('up:2 left:6')
+        actions.key('up:2 end left:6')
 
     def code_state_for_each():
         actions.insert('for  in  {\n}\n')
-        actions.key('up:2 left:6')
+        actions.key('up:2 end left:6')
 
     def code_state_while():
         actions.insert('while  {\n}\n')
-        actions.key('up:2 left:2')
+        actions.key('up:2 end left:2')
 
     def code_state_loop():
         actions.insert('loop  {\n}\n')
-        actions.key('up:2 left:2')
+        actions.key('up:2 end')
 
     def code_state_return():
         actions.auto_insert('return ')
@@ -232,7 +329,7 @@ class UserActions:
             )
         )
         actions.user.paste(result)
-        actions.key('up:2 left:3')
+        actions.key('up:2 right:3')
 
     def code_public_function(text: str):
         result = "pub fn {}() {{\n}}\n".format(
@@ -241,7 +338,7 @@ class UserActions:
             )
         )
         actions.user.paste(result)
-        actions.key('up:2 left:3')
+        actions.key('up:2 right:7')
 
     def code_insert_type_annotation(type: str):
         actions.insert(f": {type}")
@@ -252,12 +349,7 @@ class UserActions:
     # tag: functions_gui
 
     def code_insert_function(text: str, selection: str):
-        if selection:
-            out_text = text + "({})".format(selection)
-        else:
-            out_text = text + "()"
-        actions.user.paste(out_text)
-        actions.edit.left()
+        code_insert_function_or_macro(text, selection, '(', ')')
 
     # tag: libraries
 
@@ -372,7 +464,54 @@ class UserActions:
     def code_operator_or():
         actions.auto_insert(' || ')
 
-    # tag: operators_pointer
+    # rust specific grammar
 
-    def todo():
-        todo!()
+    def code_operator_structure_dereference():
+        actions.auto_insert('*')
+
+    def code_insert_if_let_some():
+        actions.insert('if let Some() =  {  }')
+        actions.key('end left:9')
+
+    def code_insert_if_let_error():
+        actions.insert('if let Err() =  {  }')
+        actions.key('end left:9')
+
+    def code_state_implements():
+        actions.insert('impl  {\n}\n')
+        actions.key('up:2 right:5')
+
+    def code_insert_trait_annotation(type: str):
+        actions.insert(f": impl {type}")
+
+    def code_insert_return_trait(type: str):
+        actions.insert(f" -> impl {type}")
+
+    def code_insert_macro(text: str, selection: str):
+        code_insert_function_or_macro(text, selection, '(', ')')
+
+    def code_insert_macro_array(text: str, selection: str):
+        code_insert_function_or_macro(text, selection, '[', ']')
+
+    def code_insert_macro_block(text: str, selection: str):
+        code_insert_function_or_macro(text, selection, '{', '}')
+
+    def code_state_unsafe():
+        actions.insert('unsafe {\n}\n')
+        actions.key('up')
+
+
+def code_insert_function_or_macro(
+        text: str,
+        selection: str,
+        left_delim: str,
+        right_delim: str,
+):
+    if selection:
+        out_text = text + "{}{}{}".format(
+            left_delim, selection, right_delim)
+    else:
+        out_text = text + "{}{}".format(left_delim, right_delim)
+    actions.user.paste(out_text)
+    actions.edit.left()
+

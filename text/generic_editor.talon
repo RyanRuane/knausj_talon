@@ -22,6 +22,24 @@ go up:
 go down:
     edit.down()
 
+move left:
+    edit.left()
+
+move right:
+    edit.right()
+
+move up:
+    edit.up()
+
+move down:
+    edit.down()
+
+move back:
+    edit.left()
+
+move forward:
+    edit.right()
+
 go line start:
     edit.line_start()
 

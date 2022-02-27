@@ -27,6 +27,7 @@ extension_lang_map = {
     ".py": "python",
     ".r": "r",
     ".rb": "ruby",
+    ".rs": "rust",
     ".s": "assembly",
     ".scala": "scala",
     ".sh": "bash",
