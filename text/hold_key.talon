@@ -12,3 +12,6 @@ hold down:
 
 hold stop:
     user.stop_hold()
+
+stop:
+    user.stop_hold()
