@@ -20,6 +20,8 @@ midclick:
 	# close the mouse grid
 	user.grid_close()
 
+rem: user.mouse_trigger_zoom_mouse()
+
 #see keys.py for modifiers.
 #defaults
 #command
