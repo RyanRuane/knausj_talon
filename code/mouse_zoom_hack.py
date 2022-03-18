@@ -5,7 +5,7 @@ from talon_plugins import eye_mouse, eye_zoom_mouse
 
 
 mouse_zoom_hack_enabled = True
-tracker_initialize_time = 0.07
+tracker_initialize_time = 0.1
 
 mod = Module()
 

@@ -13,7 +13,7 @@ make dir: "mkdir "
 secure shell: "ssh "
 secure shell recursive: "ssh -r "
 grep inside <user.text>: "grep -rwn . -e '{text}'"
-exit terminal: "exit"
+exit terminal: "exit\n"
 
 # todo: Move this into its own file later.
 cargo build: "cargo build\n"
