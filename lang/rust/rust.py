@@ -202,8 +202,8 @@ ctx.lists['user.code_libraries'] = {
     'collections': 'std::collections',
 }
 
-# tag: functions_gui
-ctx.lists['user.code_functions'] = {
+# tag: functions_common
+ctx.lists['user.code_common_function'] = {
     'drop': 'drop',
     'catch unwind': 'catch_unwind',
     'iterator': 'iter',
@@ -227,7 +227,7 @@ ctx.lists['user.code_type_modifier'] = {
 }
 
 
-@ctx.capture("user.code_type", rule='[{user.code_type_modifier}]{user.code_type}')
+@ctx.capture("user.code_type", rule='[{user.code_type_modifier}] {user.code_type}')
 def code_type(m) -> str:
     """Returns a macro name"""
     return ''.join(m)
