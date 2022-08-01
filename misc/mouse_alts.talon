@@ -1,4 +1,4 @@
-lem lock: user.mouse_toggle_control_mouse()
+lem lock: user.mouse_toggle_control_mouse_legacy_hack()
 lem:
 	mouse_click(0)
 	# close the mouse grid if open
