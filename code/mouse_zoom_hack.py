@@ -1,14 +1,51 @@
 import time
 
+from pynput import keyboard
 from talon import Module
 from talon_plugins import eye_zoom_mouse
-from talon_plugins.eye_mouse import actions, config
+from talon_plugins.eye_mouse import actions
 
 control_mouse_in_use = False
 mouse_zoom_hack_enabled = True
 tracker_initialize_time = 0.1
 
 mod = Module()
+
+
+def mouse_toggle_control_mouse_legacy_hack(enabled: bool = None):
+    global control_mouse_in_use
+    control_mouse_in_use = not control_mouse_in_use
+    actions.tracking.control1_toggle(control_mouse_in_use)
+
+
+def build_keyboard_listener():
+    # def on_activate():
+    #     mouse_toggle_control_mouse_legacy_hack()
+
+    def on_press(key):
+        if key == keyboard.Key.num_lock:
+            mouse_toggle_control_mouse_legacy_hack()
+
+    # def for_canonical(hotkey):
+    #     '''Removes any modifier state from the key events
+    #     and normalises modifiers with more than one physical button'''
+    #     return lambda k: hotkey(keyboard.Listener.canonical(k))
+
+    # hotkey = keyboard.HotKey(
+    #     keyboard.HotKey.parse('<ctrl>+<alt>+h'),
+    #     on_activate,
+    # )
+
+    listener = keyboard.Listener(
+        on_press=on_press,
+        # on_press=for_canonical(hotkey.press),
+        # on_release=for_canonical(hotkey.release),
+    )
+    return listener
+
+
+listener = build_keyboard_listener()
+listener.start()
 
 
 @mod.action_class
@@ -35,6 +72,4 @@ class Actions:
 
     def mouse_toggle_control_mouse_legacy_hack(enabled: bool = None):
         """Toggles control mouse. Pass in a bool to enable it, otherwise toggle the current state"""
-        global control_mouse_in_use
-        actions.tracking.control1_toggle(control_mouse_in_use)
-        control_mouse_in_use = not control_mouse_in_use
+        mouse_toggle_control_mouse_legacy_hack(enabled)
