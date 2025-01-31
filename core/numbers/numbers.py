@@ -243,7 +243,7 @@ def number_string(m) -> str:
     return parse_number(list(m))
 
 
-@ctx.capture("number", rule="<user.number_string>")
+@ctx.capture("num", rule="<user.number_string>")
 def number(m) -> int:
     """Parses a number phrase, returning it as an integer."""
     return int(m.number_string)
