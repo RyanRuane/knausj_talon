@@ -172,7 +172,7 @@ class CommandListener(threading.Thread):
     def __init__(self, hostname: str, port: int):
         threading.Thread.__init__(self)
         self.logger = logging.getLogger(__name__)
-        self.logger.addHandler(logging.FileHandler('listener_hook_hack.log', mode='w'))
+        self.logger.addHandler(logging.FileHandler('/tmp/listener_hook_hack.log', mode='w'))
         self.name = 'TalonCommandListener'
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
