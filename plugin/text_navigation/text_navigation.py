@@ -1,45 +1,32 @@
 import itertools
 import re
 
-from talon import Context, Module, actions
+from talon import Context, Module, actions, settings
 
 ctx = Context()
 mod = Module()
 
 
-text_navigation_max_line_search = mod.setting(
+mod.setting(
     "text_navigation_max_line_search",
     type=int,
     default=10,
-    desc="the maximum number of rows that will be included in the search for the keywords above and below in <user direction>",
+    desc="The maximum number of rows that will be included in the search for the keywords above and below in <user direction>",
 )
 
 mod.list(
     "navigation_action",
-    desc="actions to perform, for instance move, select, cut, etc",
+    desc="Actions to perform, for instance move, select, cut, etc",
 )
 mod.list(
     "before_or_after",
-    desc="words to indicate if the cursor should be moved before or after a given reference point",
+    desc="Words to indicate if the cursor should be moved before or after a given reference point",
 )
 mod.list(
     "navigation_target_name",
-    desc="names for regular expressions for common things to navigate to, for instance a word with or without underscores",
+    desc="Names for regular expressions for common things to navigate to, for instance a word with or without underscores",
 )
 
-ctx.lists["self.navigation_action"] = {
-    "move": "GO",
-    "extend": "EXTEND",
-    "select": "SELECT",
-    "clear": "DELETE",
-    "cut": "CUT",
-    "copy": "COPY",
-}
-ctx.lists["self.before_or_after"] = {
-    "before": "BEFORE",
-    "after": "AFTER",
-    # DEFAULT is also a valid option as input for this capture, but is not directly accessible for the user.
-}
 navigation_target_names = {
     "word": r"\w+",
     "small": r"[A-Z]?[a-z0-9]+",
@@ -132,7 +119,7 @@ def get_text_right():
 def get_text_up():
     actions.edit.up()
     actions.edit.line_end()
-    for j in range(0, text_navigation_max_line_search.get()):
+    for j in range(0, settings.get("user.text_navigation_max_line_search")):
         actions.edit.extend_up()
     actions.edit.extend_line_start()
     text = actions.edit.selected_text()
@@ -143,7 +130,7 @@ def get_text_up():
 def get_text_down():
     actions.edit.down()
     actions.edit.line_start()
-    for j in range(0, text_navigation_max_line_search.get()):
+    for j in range(0, settings.get("user.text_navigation_max_line_search")):
         actions.edit.extend_down()
     actions.edit.extend_line_end()
     text = actions.edit.selected_text()

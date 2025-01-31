@@ -3,7 +3,7 @@ from talon import Context, Module, actions, settings
 mod = Module()
 ctx = Context()
 ctx.matches = r"""
-tag: user.lua
+code.language: lua
 """
 
 mod.setting(
@@ -207,9 +207,6 @@ class UserActions:
     def code_import():
         actions.user.insert_between("local ", " = require('')")
 
-    ##
-    # code_libraries_gui
-    ##
     def code_insert_library(text: str, selection: str):
         actions.insert(f"local {selection} = require('{selection}')")
 

@@ -52,13 +52,14 @@ See https://github.com/talonhub/community/issues/940 for original discussion
 import datetime
 import os.path
 import warnings
+from typing import Optional
 
-from talon import Module, actions, speech_system
+from talon import Module, actions, settings, speech_system
 
 REPO_DIR = os.path.dirname(os.path.dirname(__file__))
 
 mod = Module()
-setting_deprecate_warning_interval_hours = mod.setting(
+mod.setting(
     "deprecate_warning_interval_hours",
     type=float,
     desc="""How long, in hours, to wait before notifying the user again of a
@@ -98,7 +99,7 @@ def deprecate_notify(id: str, message: str):
 
     maybe_last_shown = notification_last_shown.get(id)
     now = datetime.datetime.now()
-    interval = setting_deprecate_warning_interval_hours.get()
+    interval = settings.get("user.deprecate_warning_interval_hours")
     threshold = now - datetime.timedelta(hours=interval)
     if maybe_last_shown is not None and maybe_last_shown > threshold:
         return
@@ -161,18 +162,21 @@ class Actions:
         )
         warnings.warn(msg, DeprecationWarning, stacklevel=3)
 
-    def deprecate_action(time_deprecated: str, name: str):
+    def deprecate_action(time_deprecated: str, name: str, replacement: str = ""):
         """
         Notify the user that the given action is deprecated and should
-        not be used into the future.
+        not be used into the future; the action `replacement` should be used
+        instead.
         """
 
         id = f"action.{name}.{time_deprecated}"
 
         deprecate_notify(id, f"The `{name}` action is deprecated. See log for more.")
+        replacement_msg = f' Instead, use: "{replacement}".' if replacement else ""
 
         msg = (
             f"The `{name}` action is deprecated since {time_deprecated}."
+            f"{replacement_msg}"
             f' See {os.path.join(REPO_DIR, "BREAKING_CHANGES.txt")}'
             f"{calculate_rule_info()}"
         )
