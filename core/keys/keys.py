@@ -146,6 +146,7 @@ symbol_key_words = {
     "quote": "'",
     "question": "?",
     "apostrophe": "'",
+    "apost": "'",
     "L square": "[",
     "left square": "[",
     "brack": "[",
